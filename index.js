@@ -1,5 +1,6 @@
 const express = require('express');
 
+
 //Crear servidor node
 const app = express();
 const puerto = 4005;
@@ -8,12 +9,15 @@ const puerto = 4005;
 app.use( express.json() );
 
 //Crear rutas
+const routes_product = require('./routes/product');
+
+app.use('/mercado-libre/product', routes_product);
+
 app.get('/', (req, res) => {
 
     res.status(200).send(`
         <h1>Hola</h1>
     `);
-
     
 });
 
