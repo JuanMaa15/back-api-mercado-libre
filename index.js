@@ -1,12 +1,18 @@
 const express = require('express');
+const dotenv = require('dotenv');
 
+if (process.env.NODE_ENV !== 'production') {
+    dotenv.config();
+}
 
 //Crear servidor node
 const app = express();
-const puerto = 4005;
+
+//app.set('PORT', process.env.PORT || 4000);
 
 //Convertir body a objeo JS 
 app.use( express.json() );
+app.use( express.urlencoded({ extended : true }) );
 
 //Crear rutas
 const routes_product = require('./routes/product');
@@ -21,7 +27,7 @@ app.get('/', (req, res) => {
     
 });
 
-app.listen(puerto, () => {
-    console.log(`Servidor corriendo en el puerto ${puerto}`);
+app.listen(process.env.PORT, () => {
+    console.log(`Servidor corriendo en el puerto ${process.env.PORT}`);
 });
 
