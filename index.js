@@ -21,10 +21,13 @@ const { default: axios } = require('axios');
 app.use('/mercado-libre/product', routes_product);
 
 
-const redirect_uri = `https://3fba-190-0-247-116.ngrok-free.app/mercado-libre`;
+//const redirect_uri = `https://3fba-190-0-247-116.ngrok-free.app/mercado-libre`;
+//https://bc34-190-0-247-116.ngrok-free.app/mercado-libre
+const redirect_uri = 'https://bc34-190-0-247-116.ngrok-free.app/mercado-libre'; 
+
 app.get('/', (req, res) => {
 
-    res.redirect(`https://auth.mercadolibre.com.co/authorization?response_type_code=code&client_id=${ process.env.ML_APP_ID }`);
+    res.redirect(`https://auth.mercadolibre.com.co/authorization?response_type=code&client_id=${ process.env.ML_APP_ID }&redirect_uri=${redirect_uri}`);
     
 });
 
@@ -36,20 +39,35 @@ app.get('/mercado-libre', async(req, res) => {
         client_id: process.env.ML_APP_ID,
         client_secret: process.env.ML_CLIENT_SECRET,
         code,
-        redirect_url
+        redirect_uri
     };
 
     try {
-        let response = await axios.post('https://api.mercadolibre.com/oauth/token', qs.stringify(body), {
+        /*qs.stringify(body) */
+        let response = await axios.post('https://api.mercadolibre.com/oauth/token', body, {
             headers: {
                 'accept': 'application/json',
-                'Content-Type' : 'application/x-www-form-urlencoded',
+                'content-type' : 'application/x-www-form-urlencoded',
             },
+            
     
         });
+
+        /* let response = await fetch('https://api.mercadolibre.com/oauth/token', {
+            method: 'POST',
+            headers: {
+                'accept': 'application/json',
+                'content-type' : 'application/x-www-form-urlencoded',
+            },
+            body: JSON.stringify(body)
     
-        const {accessToken} = await response.data;
-        res.status(200).json({response: 'success', accessToken});
+        }); */
+    
+    
+       //const data = await response.json();
+       const {access_token} = await response.data;
+       //const data = await response.json();
+        res.status(200).json({response: 'success', access_token});
         
     } catch (error) {
         console.log(`Hay un error al acceder al token - error: ${error.message} `);

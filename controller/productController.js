@@ -18,7 +18,7 @@ const getAPI = async(req, res) => {
 
     console.log("...procesando Datos");
 
-    const response = await axios.get("https://3fba-190-0-247-116.ngrok-free.app/mercado-libre");
+    //const response = await axios.get("https://3fba-190-0-247-116.ngrok-free.app/mercado-libre");
     const {data} = response.data;
 
     console.log(data);
