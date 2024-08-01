@@ -14,6 +14,14 @@ const app = express();
 app.use( express.json() );
 app.use( express.urlencoded({ extended : true }) );
 
+app.use((req, res, next) => {
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate, proxy-revalidate');
+    res.set('Pragma', 'no-cache');
+    res.set('Expires', '0');
+    res.set('Surrogate-Control', 'no-store');
+    next();
+});
+
 //Crear rutas
 const routes_product = require('./routes/product');
 const { default: axios } = require('axios');
@@ -23,7 +31,7 @@ app.use('/mercado-libre/product', routes_product);
 
 //const redirect_uri = `https://3fba-190-0-247-116.ngrok-free.app/mercado-libre`;
 //https://bc34-190-0-247-116.ngrok-free.app/mercado-libre
-const redirect_uri = 'https://a821-190-0-247-116.ngrok-free.app/mercado-libre'; 
+const redirect_uri = 'https://a689-190-0-247-116.ngrok-free.app/auth-ml'; 
 
 app.get('/', (req, res) => {
 
@@ -32,7 +40,7 @@ app.get('/', (req, res) => {
 });
 
 // Ruta para generar el access_token
-app.get('/mercado-libre', async(req, res) => {
+app.get('/auth-ml', async(req, res) => {
     let code = req.query.code;
     let body = {
         grant_type: 'authorization_code',
@@ -67,7 +75,7 @@ app.get('/mercado-libre', async(req, res) => {
        //const data = await response.json();
        const {access_token} = await response.data;
        //const data = await response.json();
-        res.status(200).json({response: 'success', access_token});
+        res.status(200).json({response: 'success', access_token, APP_ID: process.env.ML_APP_ID, APP_CLIENT: process.env.ML_CLIENT_SECRET});
         
     } catch (error) {
         console.log(`Hay un error al acceder al token - error: ${error.message} `);
@@ -156,7 +164,7 @@ app.post('/create-product', async (req, res) => {
     
     let body = {
         title: 'Item de prueba - No ofertar',
-        category_id: 'MCO1060',
+        category_id: 'MCO3530',
         price: 23000,
         currency_id: 'COP',
         available_quantity: 10,
@@ -171,17 +179,57 @@ app.post('/create-product', async (req, res) => {
         attributes: [
             {
                 id: 'BRAND',
-                value_name: 'Casio'
+                value_name: 'Casio',
+                Modelo: 'A'
             },
             {
                 id: 'EAN',
-                value_name: '7898095297749'
+                value_name: '7898095297749',
+                Modelo: 'A'
             }
 
         ]
             
         
     };
+
+    /* let body = {
+        "title":"Item de test - No Ofertar",
+        "category_id":"MCO3530",
+        "price":20000,
+        "currency_id":"COP",
+        "available_quantity":10,
+        "buying_mode":"buy_it_now",
+        "condition":"new",
+        "listing_type_id":"gold_special",
+        "sale_terms":[
+            {
+                "id":"WARRANTY_TYPE",
+                "value_name":"Garantía del vendedor"
+            },
+            {
+                "id":"WARRANTY_TIME",
+                "value_name":"90 días"
+            }
+        ],
+        "pictures":[
+            {
+                "source":"http://mla-s2-p.mlstatic.com/968521-MLA20805195516_072016-O.jpg"
+            }
+        ],
+        "attributes":[
+            {
+                "id":"BRAND",
+                "value_name":"Marca del producto"
+            },
+            {
+                "id":"EAN",
+                "value_name":"7898095297749"
+            }
+        ]
+        
+    }; */
+
 
     try {
         const response = await fetch('https://api.mercadolibre.com/items', {
@@ -211,6 +259,8 @@ app.post('/create-product', async (req, res) => {
     }
 
 });
+
+
 
 /* app.get('/detalle-subcategoria', async(req, res) => {
     try {

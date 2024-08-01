@@ -7,3 +7,6 @@ router.post('/create', ProductController.create);
 router.get('/get', ProductController.getAPI);
 
 module.exports = router;
+
+
+//Actividades tareas 
